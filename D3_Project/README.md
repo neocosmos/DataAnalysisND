@@ -27,8 +27,13 @@ After the change,
 
 index3.html
 
+The third feedback I received is that the x label "height" is not very clear at first sight. It should point out directly to be "Players height" rather tham something like the height for hitting the ball. And it would be better to add some explanation for "batting average/home run" in the corner. For the last point, I think it's not quite necessary, since batting average and home run are common statistic used in the baseball. And I don't want to add too much words on the screen.
+Final version:
+
+index4.html
 
 ## Resource
 
 http://dimplejs.org/examples_viewer.html?id=bubbles_vertical_lollipop
 http://www.w3schools.com/bootstrap/bootstrap_examples.asp
+https://github.com/d3/d3-axis
