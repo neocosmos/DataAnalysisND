@@ -35,5 +35,6 @@ index4.html
 ## Resource
 
 http://dimplejs.org/examples_viewer.html?id=bubbles_vertical_lollipop
-http://www.w3schools.com/bootstrap/bootstrap_examples.asp
+http://www.w3schools.com/bootstrap/bootstrap_examples.asp  
+
 https://github.com/d3/d3-axis
