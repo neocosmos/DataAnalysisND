@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+ 
+<div class="container">
+    <div class="row header">
+        <h1>Baseball Players Performance</h1>
+		<h3>Baseball players performance(batting average and home run) over players' height, 
+		 grouped by their handedness. 
+		 The plot is based on a data set, which contains information from 1,157 baseball players.</h3>
+    </div>
+    <div class="row">
+      <div class="col-md-3">       
+        <div class="well">
+  
+			<form>
+				<div class="form-group">
+				<label for="Performance">Performance</label>
+				<select id="BA_HR" class="form-control">
+					<option value="0">Batting Average</option>
+					<option value="1">Home Run</option>  
+				</select>
+				</div>
+			<form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+   function draw(data){
+   
+      function draw_statistics(id){
+		d3.select('.chart').remove();
+		var svg = d3.select("body")
+					.append("svg")
+					.attr("width", 800)
+					.attr("height", 600)
+					.append('g')
+					.attr('class','chart');
+				
+		$("svg").css({top: 120, left: 300, position:'absolute'});
+			
+        var myChart = new dimple.chart(svg, data);
+		myChart.setBounds(80, 50, 700, 500);
+		
+		var x = myChart.addCategoryAxis("x", "height");
+		if(id=="avg"){
+			var y = myChart.addMeasureAxis("y", "avg");
+			y.title = "Batting Average";
+			y.tickFormat = ".2f";
+			y.fontSize = "18.px";	
+		}
+        else if(id=='hr'){
+			var y = myChart.addMeasureAxis("y", "HR");
+			y.title = "Home Run";
+			y.fontSize = "18.px";
+			y.overrideMax = 120;		
+		}		
+        var z = myChart.addMeasureAxis("z", "total");
+        var bubble = myChart.addSeries(["handedness"], dimple.plot.bubble);		
+		bubble.aggregate = dimple.aggregateMethod.avg;		
+
+		x.title = "Height (inches)";
+		x.fontSize = "18.px";
+		
+		legend= myChart.addLegend(650, 100, 100, 60);
+		legend.fontSize = "20";
+		myChart.draw(1000);
+        	
+		} 
+		draw_statistics("avg");	
+	    
+		d3.select("#BA_HR").on("change", function () {  
+			var id = $("#BA_HR").val();		
+            if(id==0){
+			d3.select('.chart').remove();
+		    draw_statistics("avg");			
+			}
+			if(id==1){
+			d3.select('.chart').remove();
+			draw_statistics("hr");
+	        }
+          }
+		)		
+  
+    };
+  </script>
+</head>
+
+<body>
+  <script type="text/javascript">
+    /*
+      Use D3 to load the CSV file
+    */
+      d3.csv("baseball_data.csv", function(d) {
+          d['height'] = +d['height'];
+          d['weight'] = +d['weight'];
+		  d['HR']  = +d['HR'];
+		  d['avg'] = +d['avg'];
+		  d['total'] = d['name'];
+          return d;
+        }, draw);
+  </script>
+</body>
+</html>
