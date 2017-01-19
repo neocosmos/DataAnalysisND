@@ -12,12 +12,20 @@ the handedness. But the chart is ocupied with too many individual points, makein
 plot. The position of the bubble center represents the average of batting average for each height value. And it's grouped by players' handedness,
 indicated by color. The size of the bubble represents the number of players in the group. Although there's no clear trend between home run and
 height, I also keep it as a selection bar for reader's interest.
+The origin design file is index1.html.
 
 ## Feedback
 
-After talking with some friends(who are not actually baseball fans), the first feedback I received is that the plot lacks a brief introduction. And the y-axis title HR exceeds the svg. I added some descripition after the title and modified the axis label dispaly. 
+After talking with some friends(who are not actually baseball fans), the first feedback I received is that the plot lacks a brief introduction. It's better to provide description near the plot rather than keep it in another file.  And the y-axis title HR exceeds the svg. I added some descripition after the title and modified the axis label dispaly. 
+After the change, 
 
 index2.html
+
+Another feedback I received is that the legend is not clear. The "L/R/B" is hard to interpret as "Left/Right/Balance". I tried to add
+some words around the figure. But it seems better to change the legend name to "Left Handed/Right Handed/Balance Handed" directly. 
+After the change, 
+
+index3.html
 
 
 ## Resource
