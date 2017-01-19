@@ -15,6 +15,10 @@ height, I also keep it as a selection bar for reader's interest.
 
 ## Feedback
 
+After talking with some friends(who are not actually baseball fans), the first feedback I received is that the plot lacks a brief introduction. And the y-axis title HR exceeds the svg. I added some descripition after the title and modified the axis label dispaly. 
+
+index2.html
+
 
 ## Resource
 
