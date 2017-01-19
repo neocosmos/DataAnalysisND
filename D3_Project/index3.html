@@ -32,7 +32,7 @@
 </div>
 
 <script type="text/javascript">
-   function draw(data){
+    function draw(data){
    
       function draw_statistics(id){
 	    // remove previous plot
@@ -47,7 +47,7 @@
 		// svg position		
 		$("svg").css({top: 120, left: 300, position:'absolute'});
 			
-        var myChart = new dimple.chart(svg, data);
+		var myChart = new dimple.chart(svg, data);
 		myChart.setBounds(80, 50, 700, 500);
 		
 		var x = myChart.addCategoryAxis("x", "height");
@@ -58,16 +58,16 @@
 			y.tickFormat = ".2f";
 			y.fontSize = "18.px";	
 		}
-        else if(id=='hr'){
+		else if(id=='hr'){
 			var y = myChart.addMeasureAxis("y", "HR");
 			y.title = "Home Run";
 			y.fontSize = "18.px";
 			y.overrideMax = 120;		
 		}
 		// z axis is number of players, indicated by bubble size
-        var z = myChart.addMeasureAxis("z", "total");
+		var z = myChart.addMeasureAxis("z", "total");
 		// bubble group by handedness, average for each group
-        var bubble = myChart.addSeries(["handedness"], dimple.plot.bubble);		
+		var bubble = myChart.addSeries(["handedness"], dimple.plot.bubble);		
 		bubble.aggregate = dimple.aggregateMethod.avg;		
 
 		x.title = "Height (inches)";
@@ -78,9 +78,9 @@
 		
 		myChart.draw(1000);
 		// change the legend
-        d3.select('.dimple-legend-text.dimple-b').text("Balance-handed");
-        d3.select('.dimple-legend-text.dimple-l').text("Left-handed");
-        d3.select('.dimple-legend-text.dimple-r').text("Right-handed");	
+		d3.select('.dimple-legend-text.dimple-b').text("Balance-handed");
+		d3.select('.dimple-legend-text.dimple-l').text("Left-handed");
+		d3.select('.dimple-legend-text.dimple-r').text("Right-handed");	
 		}
 
 		// default plot	
@@ -89,17 +89,15 @@
 		// users' select
 		d3.select("#BA_HR").on("change", function () {  
 			var id = $("#BA_HR").val();		
-            if(id==0){
+			if(id==0){
 				d3.select('.chart').remove();
 				draw_statistics("avg");			
 			}
 			if(id==1){
 				d3.select('.chart').remove();
 				draw_statistics("hr");
-	        }
-          }
-		)		
-  
+			}
+		})		 
     };
   </script>
 </head>
