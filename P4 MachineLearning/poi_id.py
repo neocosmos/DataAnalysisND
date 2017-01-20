@@ -134,14 +134,13 @@ clf = clf.best_estimator_
 #test_classifier(clf, my_dataset, features_list)
 
 '''
-Pipeline(steps=[('reduce_dim', PCA(copy=True, iterated_power='auto', n_components=None, random_state=None,
-  svd_solver='auto', tol=0.0, whiten=False)), ('clf', DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+Pipeline(steps=[('clf', DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
             max_features=None, max_leaf_nodes=None,
             min_impurity_split=1e-07, min_samples_leaf=1,
             min_samples_split=2, min_weight_fraction_leaf=0.0,
             presort=False, random_state=42, splitter='best'))])
-        Accuracy: 0.82779       Precision: 0.39424      Recall: 0.38300 F1: 0.38854     F2: 0.38520
-        Total predictions: 14000        True positives:  766    False positives: 1177   False negatives: 1234   True negatives: 10823
+        Accuracy: 0.83793       Precision: 0.43210      Recall: 0.42800 F1: 0.43004     F2: 0.42881
+        Total predictions: 14000        True positives:  856    False positives: 1125   False negatives: 1144   True negatives: 10875
 '''
 
 
@@ -165,8 +164,8 @@ test_classifier(clf, my_dataset, features_list)
 '''
 Pipeline(steps=[('reduce_dim', PCA(copy=True, iterated_power='auto', n_components=None, random_state=None,
   svd_solver='auto', tol=0.0, whiten=False)), ('clf', GaussianNB(priors=None))])
-        Accuracy: 0.83907       Precision: 0.39485      Recall: 0.23750 F1: 0.29660     F2: 0.25807
-        Total predictions: 14000        True positives:  475    False positives:  728   False negatives: 1525   True negatives: 11272
+        Accuracy: 0.84414       Precision: 0.41727      Recall: 0.22950 F1: 0.29613     F2: 0.25220
+        Total predictions: 14000        True positives:  459    False positives:  641   False negatives: 1541   True negatives: 11359
 '''
 
 
