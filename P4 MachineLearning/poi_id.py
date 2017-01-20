@@ -11,8 +11,7 @@ import numpy as np
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','exercised_stock_options', 'fraction_to_poi', 'shared_receipt_with_poi',
-                'restricted_stock', 'fraction_salary', 'total_stock_value', 'from_poi_to_this_person','other'] 
+features_list = ['poi', 'exercised_stock_options', 'expenses', 'long_term_incentive','other']
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
@@ -113,7 +112,7 @@ cv = StratifiedShuffleSplit(labels, folds, random_state=42)
 ### Decision Trees
 from sklearn.tree import DecisionTreeClassifier
 
-estimators = [('reduce_dim', PCA()), 
+estimators = [#('reduce_dim', PCA()), 
               ('clf', DecisionTreeClassifier(criterion='gini',min_samples_split=2,random_state=42))]
 
 params = {
@@ -124,6 +123,9 @@ params = {
         #'clf__min_samples_leaf':[1,2,5]
         }
 pipe = Pipeline(estimators)       
+
+#from sklearn.metrics import fbeta_score, make_scorer
+#ftwo_scorer = make_scorer(fbeta_score, beta=10)
 
 clf = GridSearchCV(pipe, param_grid=params, cv=cv, scoring='f1')        
 clf.fit(features, labels)
