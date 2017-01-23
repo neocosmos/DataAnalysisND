@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="js/d3.v3.min.js"></script>
+  <script src="js/dimple.v2.0.0.min.js"></script>
+  <script src="js/jquery-2.1.4.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+ 
+ 
+<div class="container">
+    <div class="row header">
+        <h1>Baseball Players Performance</h1>
+		<h3>Baseball players performance(batting average and home run) over players' height, 
+		 grouped by their handedness, based on 1,157 baseball players. The plot shows that left handed, shorter player 
+		 in average have higher Batting Average than right handed, taller player. But the trend is not clear with Home Run.
+		</h3>
+    </div>
+	
+
+	<div class="row">
+		<div class="col-md-3">       
+		<div class="well">
+			<label for="Performance">Performance</label>
+			<select id="BA_HR" class="form-control">
+				<option value="0">Batting Average</option>
+				<option value="1">Home Run</option>  
+			</select>		 		  
+		</div>
+		</div>
+	 
+ 		<div class="col-md-3">          
+        <div id="my_svg"></div>
+		</div> 	
+	 </div>
+
+</div>
+
+ 
+<script type="text/javascript">
+    function draw(data){
+   
+      function draw_statistics(id){
+	    // remove previous plot
+		d3.select('svg').remove();
+		// build svg
+		var svg = d3.select("#my_svg")
+					.append("svg")
+					.attr("width", 800)
+					.attr("height", 600)
+					.append('g')
+					.attr('class','chart');
+					
+		// svg position		
+		//$("svg").css({top: -50, left: -10, position:'relative'});
+			
+		var myChart = new dimple.chart(svg, data);
+		myChart.setBounds(80, 50, 700, 500);
+		
+		var x = myChart.addCategoryAxis("x", "height");
+		x.title = "Players' Height (inches)";
+		x.fontSize = "18.px";
+		
+		// change y axis according to user click
+		if(id=="avg"){
+			var y = myChart.addMeasureAxis("y", "avg");
+			y.title = "Batting Average";
+			y.tickFormat = ".2f";
+			y.fontSize = "18.px";	
+		}
+		else if(id=='hr'){
+			var y = myChart.addMeasureAxis("y", "HR");
+			y.title = "Home Run";
+			y.fontSize = "18.px";
+			y.overrideMax = 120;		
+		}
+		// z axis is number of players, indicated by bubble size
+		var z = myChart.addMeasureAxis("z", "total");
+		// bubble group by handedness, average for each group
+		var bubble = myChart.addSeries(["handedness"], dimple.plot.bubble);		
+		bubble.aggregate = dimple.aggregateMethod.avg;		
+		
+		legend= myChart.addLegend("75%", "10%", "10%", "20%");
+		legend.fontSize = "20";
+		
+		myChart.assignColor("L", "#fa9280");
+		myChart.assignColor("R", "#90C3D4", 0.6);
+		myChart.assignColor("B", "#E8CF8B");
+	 
+		myChart.draw(1000);
+		// change the legend
+		d3.select('.dimple-legend-text.dimple-b').text("Balance-handed");
+		d3.select('.dimple-legend-text.dimple-l').text("Left-handed");
+		d3.select('.dimple-legend-text.dimple-r').text("Right-handed");	
+		}
+
+		// default plot	
+		draw_statistics("avg");	
+	    
+		// users' select
+		d3.select("#BA_HR").on("change", function () {  
+			var id = $("#BA_HR").val();		
+			if(id==0){
+				draw_statistics("avg");			
+			}
+			if(id==1){
+				draw_statistics("hr");
+			}
+		})		 
+    };
+  </script>
+</head>
+
+<body>
+  <script type="text/javascript">
+    /*
+      Use D3 to load the CSV file
+    */
+      d3.csv("baseball_data.csv", function(d) {
+			d['height'] = +d['height'];
+			d['weight'] = +d['weight'];
+			d['HR']  = +d['HR'];
+			d['avg'] = +d['avg'];
+			d['total'] = d['name'];
+			return d;
+        }, draw);
+  </script>
+</body>
+</html>
