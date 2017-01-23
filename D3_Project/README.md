@@ -34,15 +34,17 @@ index4.html
 
 The last feedback is that the main idea found should be included in the description part. 
 
-After change:
+After the change:
 index5.html
 
 Color is fixed for each handedness.
 
-After change:
+After the change:
 index6.html
 
 absolute svg position is deleted. It will cause overlap for different sizes of screen. div is added for svg position. 
+
+The latest version:
 index7.html
 
 
