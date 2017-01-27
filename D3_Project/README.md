@@ -1,3 +1,5 @@
+## Latest version index7.html
+
 ## Summary
 This visualization shows the baseball players performance(batting average and home run) over players' height, grouped by their handedness.
 The plot is based on a data set, which contains information from 1,157 baseball players including their handedness (right or left handed),
