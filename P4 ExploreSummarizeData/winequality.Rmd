@@ -1,0 +1,344 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# What Makes High Quality White Wine?
+by Xinkun Chu
+========================================================
+
+# Introduction
+This analysis use the white wine datasets, which include objective tests (e.g. 
+PH values) and sensory data (grade by wine experts), to study the features of 
+high graded white wine.  
+
+
+The dataset is from:
+P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis. 
+Modeling wine preferences by data mining from physicochemical properties.
+In Decision Support Systems, Elsevier, 47(4):547-553. ISSN: 0167-9236.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+library(ggplot2)
+library(GGally)
+library(corrplot)
+library(gridExtra)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+wine <- read.csv("wineQualityWhites.csv")
+```
+
+# Univariate Plots Section
+
+A quick look at the dimension and structure of the data.
+```{r echo=FALSE}
+str(wine)
+```
+```{r echo=FALSE}
+summary(wine)
+```
+
+
+The dataset has 4898 observations with 13 variables. Among the 13 variables, 
+1 id. number, 11 physicochemical (fixed acidity, volatile acidity, citric acid,
+residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, 
+pH, sulphates and alcohol) and 1 sensory (quality, score between 0 and 10).
+
+
+The main feature is the wine quality graded by the experts between 0 (very bad) 
+and 10 (very excellent). The task of this analysis to study which fearures 
+affect the white wine quality. The quality table and distribution:
+
+```{r echo=FALSE}
+table(wine$quality) 
+```
+
+```{r echo=FALSE, fig.height= 4, fig.width= 6}
+ggplot(aes(x=quality), data = wine, binwidth=1)+geom_bar()
+```
+
+The variance of the quality distribution:
+```{r echo=FALSE}
+var(wine$quality) 
+```
+
+
+The distribution is slightly left skewed with 6 as the mode. The mean is 5.88, 
+and the variance is 0.78. Few are graded lower than 4 or greater than 8.
+
+
+In this analysis, all the 11 physicochemical features may correlate with the 
+quality. Before the correlation study, check the distribution of these features 
+first.
+
+```{r, echo=FALSE, warning=FALSE, fig.height=12, fig.width=12}
+par(mfrow=c(3,4))
+p1 <- boxplot(wine$fixed.acidity, ylab="fixed acidity")
+p2 <- boxplot(wine$volatile.acidity, ylab="volatile acidity")
+p3 <- boxplot(wine$citric.acid, ylab="citric acid")
+p4 <- boxplot(wine$residual.sugar, ylab="residual sugar")
+p5 <- boxplot(wine$chlorides, ylab="chlorides")
+p6 <- boxplot(wine$free.sulfur.dioxide, ylab="free sulfur dioxide")
+p7 <- boxplot(wine$total.sulfur.dioxide, ylab="total sulfur dioxide")
+p8 <- boxplot(wine$density, ylab="density")
+p9 <- boxplot(wine$pH, ylab="pH")
+p10 <- boxplot(wine$sulphates, ylab="sulphates")
+p11 <- boxplot(wine$alcohol, ylab= "alcohol")
+```
+
+
+For the 11 features, most of them have outliers, as seen from the boxplot. 
+These outliers will be excluded in the histogram distribution. However, the 
+cases with grade lower than 4 or greater than 8 is also rare. It's possible 
+these outlies contibute to very low or very high grade. These outliers will be 
+checked in bivariate analysis. The outliers of some feature will be retained if 
+they converge at the two ends of quality, deleted otherwise. 
+
+
+```{r, echo=FALSE, warning=FALSE, fig.height=12, fig.width=12}
+# The distribution of the 11 features. 
+# Bin width are adjusted for better display
+p1 <- ggplot(data =wine, aes(x=fixed.acidity)) + 
+  geom_histogram(binwidth=0.5)+xlim(3,11)
+p2 <- ggplot(data =wine, aes(x=volatile.acidity)) + 
+  geom_histogram(binwidth=0.03)+xlim(0,0.9)
+p3 <- ggplot(data =wine, aes(x=citric.acid)) + 
+  geom_histogram(binwidth=0.02)+xlim(-0.01,0.9)
+p4 <- ggplot(data =wine, aes(x=residual.sugar)) + 
+  geom_histogram(binwidth=1)+xlim(0,28)
+p5 <- ggplot(data =wine, aes(x=chlorides)) + 
+  geom_histogram(binwidth=0.01)+xlim(0,0.2)
+p6 <- ggplot(data =wine, aes(x=free.sulfur.dioxide)) + 
+  geom_histogram(binwidth=5)+xlim(0,150)
+p7 <- ggplot(data =wine, aes(x=total.sulfur.dioxide)) + 
+  geom_histogram(binwidth=10)+xlim(0,300)
+p8 <- ggplot(data =wine, aes(x=density)) + 
+  geom_histogram(binwidth=0.001)+xlim(0.985,1.005)
+p9 <- ggplot(data =wine, aes(x=pH)) + 
+  geom_histogram(binwidth=0.1)
+p10 <- ggplot(data =wine, aes(x=sulphates)) + 
+  geom_histogram(binwidth=0.05)
+p11 <- ggplot(data =wine, aes(x=alcohol)) + 
+  geom_histogram(binwidth=0.4)
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11, ncol=4)
+```
+
+Most of the features have a left skewed distribution. For the citric acid, 
+besides the peak around 0.3, there are unusual single value peaks at 0.49 
+and 0.74 (g/dm3).  The residual sugar distribution is highly skewed with peak 
+around 1~2 g/L, which is expected for the kind of dry wine. We can see the 
+distribution better by using transforming the x axis as log10.
+
+
+
+```{r, echo=FALSE, fig.width=6, fig.height=4}
+ggplot(data =wine, aes(x=residual.sugar)) +
+  geom_histogram(binwidth=0.1)+scale_x_log10()
+```
+
+
+```{r echo=FALSE}
+# add factor type for quality
+# int type is still needed in corrplot
+wine$quality.fac <- factor(wine$quality)
+```
+
+# Bivariate Plots Section
+
+Check the correlation between these variables.
+```{r echo=FALSE, warning=FALSE, fig.width=12, fig.height=12}
+corrplot.mixed(cor(wine[2:13]))
+```
+
+
+The residual sugar has a strong correlation of 0.84 with density, and the 
+density has a strong negative correlation of -0.78 with alcohol. It seems as
+more sugar transformed into alcohol, the alcohol level increases. Meanwhile, 
+more sugar transformed means less residual sugar, which leads to a lower 
+density of the wine.
+
+For the feature quality, it has a moderate positive correlation of 0.44 with
+alcohol, week negative correlation of -0.31 with density, -0.21 with chlorides,
+-0.19 with volatile acidity, -0.17 with total sulfur dioxide. The relationship 
+between these features and quality will be checked.
+
+```{r,echo=FALSE, warning=FALSE, fig.height=4}
+qplot(x = quality.fac, y = alcohol, data = wine, 
+      geom = "boxplot", xlab = "quality")
+```
+
+There is a tendency that higher quality wine has higher level of alcohol. 
+
+
+```{r,echo=FALSE, warning=FALSE, fig.height=4}
+qplot(x = quality.fac, y = density, data = wine, 
+      geom = "boxplot", ylim = c(0.985,1.005),xlab = "quality")
+```
+
+High quality wine tends to have lower density. This agrees with result from 
+previous plot, because density has a strong negative correlation of -0.78 with 
+alcohol. 
+
+
+```{r,echo=FALSE, warning=FALSE, fig.height=4}
+qplot(x = quality.fac, y = chlorides, data = wine,
+      geom = "boxplot", ylim = c(0.01,0.1), xlab ="quality")
+```
+
+Higher quality wine tends to have a lower level of chlorides, and less spread 
+in distribution.
+
+
+```{r, echo=FALSE, warning=FALSE, fig.height=4}
+qplot(x = quality.fac, y = volatile.acidity, data = wine, 
+      geom = "boxplot", xlab="quality")
+```
+
+No clear trend is seen between volatile acidity and quality from this plot.
+
+
+```{r, echo=FALSE, warning=FALSE, fig.height=4}
+qplot(x = quality.fac, y = total.sulfur.dioxide, data = wine, 
+      geom = "boxplot", xlab="quality")
+```
+
+No clear trend is seen between total sulfur dioxide and quality from this plot.
+
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, warning=FALSE}
+#re-define the function to be used in this section
+mggplot <- function(arg1, arg2){
+   p1<- ggplot(aes_string(x = arg1, y = arg2), 
+        data = wine, xlab=substitute(arg1)) + 
+        geom_point(alpha=0.5, size =2, aes(color = quality.fac)) +
+        scale_color_brewer(palette = "YlOrRd", 
+                guide = guide_legend(title = 'Quality'))+ 
+        scale_x_continuous(lim=c(quantile(get(arg1), 0.01),   
+                           quantile(get(arg1), 0.95))) 
+   return(p1)
+}
+```
+
+```{r echo=FALSE, warning=FALSE}
+#store the variables to be studied with the same name for convenience
+alcohol <- wine$alcohol
+density <- wine$density
+chlorides <- wine$chlorides
+volatile.acidity <- wine$volatile.acidity
+total.sulfur.dioxide <- wine$total.sulfur.dioxide
+```
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5}
+mggplot("density","alcohol")
+```
+
+From the plot, high quality white wine tends to have higher alcohol and lower
+density. However, alcohol and density are strongly negative correlated, which
+explains for the result.  
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5}
+mggplot("chlorides", "alcohol") 
+```
+
+From the plot, high quality white wine tends to have higher alcohol and lower 
+chlorides. 
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5}
+mggplot("volatile.acidity", "alcohol") 
+```
+
+From the plot, high quality white wine tends to have higher alcohol and lower 
+volatile acidity. 
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5}
+mggplot("total.sulfur.dioxide","alcohol")
+```
+
+
+From the plot, higher quality wine tends to have a lower level of total sulfur 
+dioxide and higher alcohol. 
+
+
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+ggplot(aes(x=quality), data = wine, binwidth=1)+
+  geom_bar(fill=I('#391FF7'))+
+  ggtitle("Frequency Distribution of Quality")
+```
+
+### Description One
+
+The distribution is slightly left skewed. Most of the white wines are graded 
+with 5 or 6. Few are graded lower than 4 or greater than 8. Among the 4898 
+observations, only 5 observation for grade 9 and 20 observation for grade 3. 
+Because the quality is determined by the median of grade by at least 3 wine 
+experts, it's likely that different experts have different opinion on judging 
+the quality of the win. So it makes sense that extremely high or low values are 
+rare.
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+qplot(x = quality.fac, y = alcohol, data = wine, geom = "boxplot", 
+      xlab = "quality ",ylab="alcohol (%)")+
+  ggtitle("alcohol level by quality")
+```
+
+### Description Two
+
+Alcohol has a moderate positive correlation of 0.44 with quality, which is the
+largest correlation with quality found among the features. The boxplot shows 
+the alcohol percentage distribution for each quality. There is a tendency that
+higher quality wine has higher level of alcohol. Of course, more alcohol 
+doesn't necessarily mean higher quality wine. Many factors may explain this
+tendency. It's possible that higher alcohol are the result of better quality 
+grapes and better fermentation. 
+
+### Plot Three
+```{r echo=FALSE, warning=FALSE, Plot_Three,fig.width=8, fig.height=5}
+mggplot("total.sulfur.dioxide","alcohol")+
+  labs(title="Scatter plot of alcohol and total sulfur dioxideby quality",
+       x = "Total sulfur dioxide (mg/dm3)",y = "Alcohol (%)")
+```
+
+### Description Three
+
+In the scatter plot of total sulfur dioxide and alcoholm, the quality are 
+differentiate by color. Most of the light circles(wine with quality 5)
+converge at the right bottom of the plot. Low quality wine tends to have a 
+higher level of total sulfur dioxide and lower alcohol. While most of the 
+dark circles (quality 7,8) have higher level of alcohol 
+and total sulfur dioxide less than 150 mg/dm3.
+
+
+------
+
+# Reflection
+In this analysis, the correlation between white wine quality and 11 
+physicochemical features are studied using a dataset of 4898 observations. 
+It's found that alcohol has a moderate positive correlation with quality, 
+while density, chloride, volative acidity and total sulfur dioxide have low 
+negative correlation with wine quality. However, it's hard to tell what 
+physicochemical features a good white wine should have. There is no obvious
+liner relationship between these factors, further study may need the tools of 
+machine learning to train a model to dig out the complicated relationships. 
+Also, the samples for high(>8) and low quality(<4) wine would be important for 
+study, but the statistics is not enough in the dataset.
+
