@@ -1,4 +1,6 @@
-This repo. lists the projects for Udacity DataAnalysis Nanodegree   
+This repo. lists the projects for Udacity DataAnalysis Nanodegree  
+Link for the certificate:  
+https://www.dropbox.com/s/z53bm5xkfl1rolx/certificate.pdf?dl=0  
 
 ## P0 Analyze Bay Area Bike Share Data  
 ## P1  Test a Perceptual Phenomenon  
@@ -27,6 +29,6 @@ Create a data visualization from a data set that tells a story or highlights tre
 Use either dimple.js or d3.js to create the visualization. Your work should be a reflection of the theory and  
 practice of data visualization, such as visual encodings, design principles, and effective communication.  
 
-## P7: Design an A/B Test  
+## P7  Design an A/B Test  
 Make design decisions for an A/B test, including which metrics to measure and how long the test should be run.  
 Analyze the results of an A/B test that was run by Udacity and recommend whether or not to launch the change.
